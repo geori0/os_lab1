@@ -7,12 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   message("Build for Linux")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g")
 endif ()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   message("Build for Windows")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /WX /fsanitize=address /Zi")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /WX /Zi")
 endif ()
 
 add_library(prime_lib src/prime.cpp)

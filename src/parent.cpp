@@ -12,19 +12,23 @@ int main() {
     PipeCreate(pipe_to_child);
     PipeCreate(pipe_from_child);
 
-    pid_t pid = ProcessCreate();
-    if (pid == 0) {
+    ProcessRole role = ProcessCreate();
+
+    if (role == IS_CHILD) {
         PipeClose(pipe_to_child[1]);
-        dup2(pipe_to_child[0], 0);
+        RedirectFd(pipe_to_child[0], 0);
         PipeClose(pipe_to_child[0]);
+
         PipeClose(pipe_from_child[0]);
-        dup2(pipe_from_child[1], 1);
+        RedirectFd(pipe_from_child[1], 1);
         PipeClose(pipe_from_child[1]);
+        
         execl("./child", "child", NULL);
         std::cerr << "Ошибка execl" << std::endl;
         exit(-1);
     }
-    if (pid > 0) {
+    
+    if (role == IS_PARENT) {
         PipeClose(pipe_to_child[0]);
         PipeClose(pipe_from_child[1]);
 
@@ -35,19 +39,17 @@ int main() {
 
         int number;
         int message;
-        while (true) {
-            if (!(std::cin >> number)) {
-                break;
-            }
+        while (std::cin >> number) {
             PipeWrite(pipe_to_child[1], &number, sizeof(number));
             PipeRead(pipe_from_child[0], &message, sizeof(message));
             if (message == 1) {
                 break;
             }
         }
-
+        
         PipeClose(pipe_to_child[1]);
         PipeClose(pipe_from_child[0]);
     }
+
     return 0;
 }
